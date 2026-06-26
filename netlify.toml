@@ -1,0 +1,28 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Keep the client's /api/* paths working by rewriting them to Netlify Functions.
+[[redirects]]
+  from = "/api/el"
+  to = "/.netlify/functions/el"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/nakdan"
+  to = "/.netlify/functions/nakdan"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/hg"
+  to = "/.netlify/functions/hg"
+  status = 200
+  force = true
+
+# Static fallback: always serve index.html for the root.
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
