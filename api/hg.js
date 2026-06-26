@@ -1,5 +1,5 @@
-// Serverless proxy → ElevenLabs. Eliminates CORS. The API key travels only to
-// the user's own deployment (sent as x-el-key), never to a third party.
+// Serverless proxy → HeyGen. Eliminates CORS. Key travels only to the user's
+// own deployment (sent as x-hg-key), forwarded to HeyGen as X-Api-Key.
 module.exports.config = { api: { bodyParser: false } };
 
 module.exports = async (req, res) => {
@@ -11,11 +11,11 @@ module.exports = async (req, res) => {
 
   try {
     const u = new URL(req.url, 'http://x');
-    const p = u.searchParams.get('p');           // EL path incl. its own query string
+    const p = u.searchParams.get('p');
     if (!p) { res.status(400).json({ error: 'missing p' }); return; }
 
-    const key = req.headers['x-el-key'] || '';
-    const target = 'https://api.elevenlabs.io/v1' + p;
+    const key = req.headers['x-hg-key'] || '';
+    const target = 'https://api.heygen.com' + p;
 
     let body;
     if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       body = Buffer.concat(chunks);
     }
 
-    const headers = { 'xi-api-key': key };
+    const headers = { 'x-api-key': key };
     const ct = req.headers['content-type'];
     if (ct) headers['content-type'] = ct;
 
@@ -35,6 +35,6 @@ module.exports = async (req, res) => {
     if (rct) res.setHeader('content-type', rct);
     res.send(buf);
   } catch (e) {
-    res.status(500).json({ error: String(e && e.message || e) });
+    res.status(500).json({ error: String((e && e.message) || e) });
   }
 };
